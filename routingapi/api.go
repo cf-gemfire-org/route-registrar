@@ -72,10 +72,17 @@ func (r *RoutingAPI) makeTcpRouteMapping(route config.Route) (models.TcpRouteMap
 	return models.NewSniTcpRouteMapping(
 		routerGroupGUID,
 		uint16(*route.ExternalPort),
-		&route.ServerCertDomainSAN,
+		nilIfEmpty(&route.ServerCertDomainSAN),
 		route.Host,
 		uint16(*route.Port),
 		int(route.RegistrationInterval.Seconds())), nil
+}
+
+func nilIfEmpty(str *string) *string {
+	if str == nil || *str == "" {
+		return nil
+	}
+	return str
 }
 
 func (r *RoutingAPI) RegisterRoute(route config.Route) error {
