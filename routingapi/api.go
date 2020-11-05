@@ -69,9 +69,10 @@ func (r *RoutingAPI) makeTcpRouteMapping(route config.Route) (models.TcpRouteMap
 
 	r.logger.Info("Creating mapping", lager.Data{})
 
-	return models.NewTcpRouteMapping(
+	return models.NewSniTcpRouteMapping(
 		routerGroupGUID,
 		uint16(*route.ExternalPort),
+		&route.ServerCertDomainSAN,
 		route.Host,
 		uint16(*route.Port),
 		int(route.RegistrationInterval.Seconds())), nil
@@ -87,7 +88,6 @@ func (r *RoutingAPI) RegisterRoute(route config.Route) error {
 	if err != nil {
 		return err
 	}
-
 
 	err = r.apiClient.UpsertTcpRouteMappings([]models.TcpRouteMapping{
 		routeMapping})
